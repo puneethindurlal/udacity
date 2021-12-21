@@ -24,9 +24,10 @@ def clean_data(df):
     for column in categories:
         categories[column] = categories[column].str[-1]
         categories[column] = pd.to_numeric(categories[column], downcast="integer")
-
+    
     df.drop("categories", axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1, sort=False)
+    df.related.replace(2,1,inplace=True)
     
     df.drop(df[df.duplicated(keep="first")].index, inplace=True)
     return df
@@ -35,7 +36,7 @@ def clean_data(df):
 def save_data(df, database_filename):
     '''saves the dataframe as sql database file'''
     engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql('messages_categories', engine, index=False) 
+    df.to_sql('messages_categories', engine, index=False, if_exists='replace') 
 
 
 def main():
